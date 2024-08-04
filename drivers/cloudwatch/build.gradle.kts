@@ -15,9 +15,9 @@
  *     along with UnifiedMetrics.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+apply(plugin = "kotlinx-serialization")
+
 dependencies {
-    api(project(":unifiedmetrics-common"))
-    implementation(project(":unifiedmetrics-driver-influx"))
-    implementation(project(":unifiedmetrics-driver-prometheus"))
-    implementation(project(":unifiedmetrics-driver-cloudwatch"))
+    compileOnly(project(":unifiedmetrics-api"))
+    api("aws.sdk.kotlin:cloudwatch:1.3.3")
 }

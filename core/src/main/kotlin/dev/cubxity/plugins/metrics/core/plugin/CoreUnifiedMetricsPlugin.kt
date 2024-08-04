@@ -20,12 +20,14 @@ package dev.cubxity.plugins.metrics.core.plugin
 import dev.cubxity.plugins.metrics.common.plugin.AbstractUnifiedMetricsPlugin
 import dev.cubxity.plugins.metrics.influx.InfluxMetricsDriverFactory
 import dev.cubxity.plugins.metrics.prometheus.PrometheusMetricsDriverFactory
+import dev.cubxity.plugins.metrics.cloudwatch.CloudwatchMetricsDriverFactory
 
 abstract class CoreUnifiedMetricsPlugin : AbstractUnifiedMetricsPlugin() {
     override fun registerMetricsDrivers() {
         apiProvider.metricsManager.apply {
             registerDriver("influx", InfluxMetricsDriverFactory)
             registerDriver("prometheus", PrometheusMetricsDriverFactory)
+            registerDriver("cloudwatch", CloudwatchMetricsDriverFactory)
         }
     }
 }

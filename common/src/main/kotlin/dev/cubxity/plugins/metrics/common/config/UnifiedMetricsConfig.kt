@@ -33,7 +33,7 @@ data class UnifiedMetricsServerConfig(
 @Serializable
 data class UnifiedMetricsMetricsConfig(
     val enabled: Boolean = true,
-    val driver: String = "prometheus",
+    val drivers: Array<String> = arrayOf("prometheus", "cloudwatch"),
     val collectors: UnifiedMetricsCollectorsConfig = UnifiedMetricsCollectorsConfig()
 )
 

@@ -40,7 +40,7 @@ class MetricsManagerImpl(private val plugin: UnifiedMetricsPlugin) : MetricsMana
     private val _collections: MutableList<CollectorCollection> = ArrayList()
 
     private var shouldInitialize: Boolean = false
-    private var driver: MetricsDriver? = null
+    private var drivers: MutableList<MetricsDriver> = mutableListOf<MetricsDriver>()
 
     override val collections: List<CollectorCollection>
         get() = _collections
@@ -48,15 +48,16 @@ class MetricsManagerImpl(private val plugin: UnifiedMetricsPlugin) : MetricsMana
     override fun initialize() {
         shouldInitialize = true
 
-        val driverName = plugin.config.metrics.driver
-        val factory = metricDrivers[driverName]
+        plugin.config.metrics.drivers.forEach { driverName ->
+            val factory = metricDrivers[driverName]
 
-        Files.createDirectories(driverDirectory)
+            Files.createDirectories(driverDirectory)
 
-        if (factory !== null) {
-            initializeDriver(driverName, factory)
-        } else {
-            plugin.bootstrap.logger.warn("Driver '$driverName' not found. Metrics will be enabled when the driver is loaded.")
+            if (factory !== null) {
+                initializeDriver(driverName, factory)
+            } else {
+                plugin.bootstrap.logger.warn("Driver '$driverName' not found. Metrics will be enabled when the driver is loaded.")
+            }
         }
     }
 
@@ -82,8 +83,8 @@ class MetricsManagerImpl(private val plugin: UnifiedMetricsPlugin) : MetricsMana
     override fun registerDriver(name: String, factory: MetricsDriverFactory<out Any>) {
         metricDrivers[name] = factory as MetricsDriverFactory<Any>
 
-        if (shouldInitialize && driver === null) {
-            if (name == plugin.config.metrics.driver) {
+        if (shouldInitialize) {
+            if (plugin.config.metrics.drivers.contains(name)) {
                 initializeDriver(name, factory)
             }
         }
@@ -121,8 +122,10 @@ class MetricsManagerImpl(private val plugin: UnifiedMetricsPlugin) : MetricsMana
             unregisterCollection(collection)
         }
 
-        driver?.close()
-        driver = null
+        drivers.forEach { driver ->
+            driver?.close()
+            drivers.remove(driver)
+        }
     }
 
     private fun initializeDriver(name: String, factory: MetricsDriverFactory<Any>) {
@@ -146,7 +149,7 @@ class MetricsManagerImpl(private val plugin: UnifiedMetricsPlugin) : MetricsMana
                 val driver = factory.createDriver(plugin.apiProvider, config)
                 driver.initialize()
 
-                this.driver = driver
+                this.drivers.add(driver)
             } catch (error: Throwable) {
                 plugin.apiProvider.logger.severe("An error occurred whilst initializing metrics driver $name", error)
             }

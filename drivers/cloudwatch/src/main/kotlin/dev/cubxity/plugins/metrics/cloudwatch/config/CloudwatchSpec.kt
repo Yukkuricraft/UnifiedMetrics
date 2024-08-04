@@ -15,9 +15,19 @@
  *     along with UnifiedMetrics.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-dependencies {
-    api(project(":unifiedmetrics-common"))
-    implementation(project(":unifiedmetrics-driver-influx"))
-    implementation(project(":unifiedmetrics-driver-prometheus"))
-    implementation(project(":unifiedmetrics-driver-cloudwatch"))
-}
+package dev.cubxity.plugins.metrics.cloudwatch.config
+
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class CloudwatchConfig(
+    val awsMetricNamespace: String = "UnifiedMetrics",
+    val authentication: CloudwatchAuthenticationConfig = CloudwatchAuthenticationConfig(),
+    val pushIntervalSeconds: Long = 30
+)
+
+@Serializable
+data class CloudwatchAuthenticationConfig(
+    val awsProfileName: String = "default",
+    val regionName: String = "us-east-1"
+)

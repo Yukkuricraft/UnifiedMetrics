@@ -15,9 +15,23 @@
  *     along with UnifiedMetrics.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-dependencies {
-    api(project(":unifiedmetrics-common"))
-    implementation(project(":unifiedmetrics-driver-influx"))
-    implementation(project(":unifiedmetrics-driver-prometheus"))
-    implementation(project(":unifiedmetrics-driver-cloudwatch"))
+package dev.cubxity.plugins.metrics.cloudwatch
+
+
+import dev.cubxity.plugins.metrics.api.UnifiedMetrics
+import dev.cubxity.plugins.metrics.api.metric.MetricsDriver
+import dev.cubxity.plugins.metrics.api.metric.MetricsDriverFactory
+import dev.cubxity.plugins.metrics.cloudwatch.config.CloudwatchConfig
+
+import kotlinx.serialization.KSerializer
+
+object CloudwatchMetricsDriverFactory : MetricsDriverFactory<CloudwatchConfig> {
+    override val configSerializer: KSerializer<CloudwatchConfig>
+        get() = CloudwatchConfig.serializer()
+
+    override val defaultConfig: CloudwatchConfig
+        get() = CloudwatchConfig()
+
+    override fun createDriver(api: UnifiedMetrics, config: CloudwatchConfig): MetricsDriver =
+        CloudwatchMetricsDriver(api, config)
 }

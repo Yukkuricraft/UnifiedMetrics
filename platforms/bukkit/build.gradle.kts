@@ -37,6 +37,7 @@ tasks {
         relocate("okhttp", "dev.cubxity.plugins.metrics.libs.okhttp")
         relocate("okio", "dev.cubxity.plugins.metrics.libs.okio")
         relocate("io.prometheus", "dev.cubxity.plugins.metrics.libs.io.prometheus")
+        relocate("com.cloudwatch", "dev.cubxity.plugins.metrics.libs.com.cloudwatch")
 
         manifest {
             attributes(mapOf("paperweight-mappings-namespace" to "mojang"))
